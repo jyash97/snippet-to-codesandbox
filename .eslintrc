@@ -1,0 +1,16 @@
+{
+	"parser": "babel-eslint",
+	"extends": ["airbnb-base/legacy", "prettier"],
+	"env": {
+		"browser": true,
+		"es6": true,
+		"node": true
+	},
+	"globals": {
+		"chrome": true
+	},
+	"plugins": ["prettier"],
+	"rules": {
+		"prettier/prettier": ["error"]
+	}
+}
