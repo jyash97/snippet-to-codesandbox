@@ -15,9 +15,11 @@ export default {
 			file: pkg.browser,
 			format: 'iife',
 			sourcemap: true,
+			intro: 'const global = window;',
 		},
 	],
 	plugins: [
+		builtins(),
 		external(),
 		resolve({
 			preferBuiltins: true,
