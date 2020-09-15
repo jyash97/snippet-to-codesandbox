@@ -3,8 +3,6 @@ import external from 'rollup-plugin-peer-deps-external';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import builtins from 'rollup-plugin-node-builtins';
-import globals from 'rollup-plugin-node-globals';
-import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 import pkg from './package.json';
 
