@@ -15,14 +15,24 @@ ReactDOM.render(
 );`;
 }
 
-export function getReactFiles({ content, imports }) {
+export function getReactFiles({ content, imports, dependencies }) {
+	const defaultDependencies = {
+		react: 'latest',
+		'react-dom': 'latest',
+	};
+
+	const allDependencies = dependencies.reduce(
+		(agg, dep) => ({
+			...agg,
+			[dep]: 'latest',
+		}),
+		{ ...defaultDependencies },
+	);
+
 	return {
 		'package.json': {
 			content: {
-				dependencies: {
-					react: 'latest',
-					'react-dom': 'latest',
-				},
+				dependencies: allDependencies,
 			},
 		},
 		'index.js': {

@@ -1,17 +1,31 @@
-import { parse, print } from 'recast';
+import { parse, prettyPrint } from 'recast';
 import parser from 'recast/parsers/babylon';
 import { getReactFiles } from '../templates/react';
 
-const getTemplateFiles = ({ template, content: code }) => {
+const getCodeContent = (code) => {
 	const ast = parse(code, {
 		parser,
 	});
 	ast.program.body = ast.program.body.filter((item) => item.type !== 'ImportDeclaration');
 
-	const content = print(ast).code;
+	return prettyPrint(ast).code;
+};
+
+const getImportContent = (code) => {
+	const ast = parse(code, {
+		parser,
+	});
+	ast.program.body = ast.program.body.filter((item) => item.type === 'ImportDeclaration');
+	const dependencies = ast.program.body.map((item) => item.source.value);
+	return { imports: prettyPrint(ast).code, dependencies };
+};
+
+const getTemplateFiles = ({ template, code }) => {
+	const content = getCodeContent(code);
+	const { imports, dependencies } = getImportContent(code);
 	switch (template) {
 		case 'react': {
-			return getReactFiles({ content: code, import: '' });
+			return getReactFiles({ content, imports, dependencies });
 		}
 		default: {
 			return {};

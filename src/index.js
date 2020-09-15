@@ -1,5 +1,10 @@
 import { getSandboxURL } from './utils';
 
+const TEMPLATES = [
+	{ title: 'React', id: 'react' },
+	{ title: 'Vanilla', id: 'vanilla' },
+];
+
 chrome.runtime.onInstalled.addListener(function runtimeListener() {
 	chrome.contextMenus.create({
 		title: 'Open in CodeSandbox',
@@ -7,18 +12,12 @@ chrome.runtime.onInstalled.addListener(function runtimeListener() {
 		contexts: ['selection'],
 	});
 
-	chrome.contextMenus.create({
-		title: 'React',
-		parentId: 'parent',
-		id: 'react',
-		contexts: ['selection'],
-	});
-
-	chrome.contextMenus.create({
-		title: 'Vanilla',
-		parentId: 'parent',
-		id: 'vanilla',
-		contexts: ['selection'],
+	TEMPLATES.forEach((template) => {
+		chrome.contextMenus.create({
+			...template,
+			contexts: ['selection'],
+			parentId: 'parent',
+		});
 	});
 });
 
@@ -26,10 +25,10 @@ chrome.contextMenus.onClicked.addListener(function clickListener(clickData) {
 	switch (clickData.menuItemId) {
 		case 'react': {
 			getSandboxURL({
-				template: 'react',
-				content: clickData.selectionText,
+				template: clickData.menuItemId,
+				code: clickData.selectionText,
 			})
-				.then((r) => r.json())
+				.then((res) => res.json())
 				.then((data) => {
 					chrome.tabs.create({
 						url: `https://codesandbox.io/s/${data.sandbox_id}`,
@@ -38,7 +37,7 @@ chrome.contextMenus.onClicked.addListener(function clickListener(clickData) {
 			break;
 		}
 		default: {
-			console.log('Nothing');
+			console.log('Unknown template');
 		}
 	}
 });
