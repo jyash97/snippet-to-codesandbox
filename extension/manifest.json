@@ -1,11 +1,11 @@
 {
-  "name": "Open in Codesandbox",
-  "description": "Shows some of the features of the Context Menus API using an event page",
-  "version": "0.0.1",
-  "permissions": ["contextMenus"],
-  "background": {
-    "persistent": false,
-    "scripts": ["context.js"]
-  },
-  "manifest_version": 2
+	"name": "Open in Codesandbox",
+	"description": "Shows some of the features of the Context Menus API using an event page",
+	"version": "0.0.1",
+	"permissions": ["contextMenus", "tabs", "<all_urls>"],
+	"background": {
+		"persistent": false,
+		"scripts": ["context.js"]
+	},
+	"manifest_version": 2
 }

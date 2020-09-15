@@ -52,6 +52,109 @@
     return target;
   }
 
+  function getIndexFile(_ref) {
+    var content = _ref.content,
+        imports = _ref.imports,
+        dependencies = _ref.dependencies,
+        hasExportStatement = _ref.hasExportStatement;
+
+    /*
+    	Considering that selected text may render it to React DOM.
+    */
+    if (dependencies.includes('react-dom')) {
+      return "".concat(imports, "\n").concat(content, "\n\t\t");
+    }
+
+    var fileContent = "\n".concat(imports, "\nconst App = () => (\n    <React.Fragment>\n        ").concat(content, "\n    </React.Fragment>\n);\n\t");
+    /*
+    	Considering that the selected text is exporting a component,
+    	so we import that component in index.js. And define the exported
+    	component in App.js
+    */
+
+    if (hasExportStatement) {
+      fileContent = "\nimport App from './App';\n\t\t";
+    }
+
+    return "import React from 'react';\nimport ReactDOM from 'react-dom';\n\n".concat(fileContent, "\n\nReactDOM.render(\n  <App />,\n  document.getElementById('root')\n);");
+  }
+
+  function getAppFile(_ref2) {
+    var content = _ref2.content,
+        imports = _ref2.imports,
+        dependencies = _ref2.dependencies;
+
+    /*
+    	If react is imported already we dont add it again.
+    */
+    if (dependencies.includes('react')) {
+      return "\n".concat(imports, "\n").concat(content, "\n\t\t");
+    }
+
+    return "\nimport React from 'react';\n".concat(imports, "\n").concat(content, "\n\t\t");
+  }
+  /**
+   * Generates all files for React from the selected text.
+   *
+   * @param {*} { content, imports, dependencies, hasExportStatement }
+   * @returns {Object}
+   */
+
+
+  function getReactFiles(_ref3) {
+    var content = _ref3.content,
+        imports = _ref3.imports,
+        dependencies = _ref3.dependencies,
+        hasExportStatement = _ref3.hasExportStatement;
+    var defaultDependencies = {
+      react: 'latest',
+      'react-dom': 'latest'
+    };
+    /*
+    	Traverse all dependecies and add the version to `latest`.
+    */
+
+    var allDependencies = dependencies.reduce(function (agg, dep) {
+      return _objectSpread2(_objectSpread2({}, agg), {}, _defineProperty({}, dep, 'latest'));
+    }, _objectSpread2({}, defaultDependencies));
+    var defaultFiles = {
+      'package.json': {
+        content: {
+          dependencies: allDependencies
+        }
+      },
+      'index.js': {
+        content: getIndexFile({
+          content: content,
+          imports: imports,
+          dependencies: dependencies,
+          hasExportStatement: hasExportStatement
+        })
+      },
+      'index.html': {
+        content: '<div id="root"></div>'
+      }
+    };
+    /*
+    	If export statement is present, place the copied code in App.js
+    	and import it in index.js
+    */
+
+    if (hasExportStatement) {
+      return _objectSpread2(_objectSpread2({}, defaultFiles), {}, {
+        'App.js': {
+          content: getAppFile({
+            content: content,
+            imports: imports,
+            dependencies: dependencies
+          })
+        }
+      });
+    }
+
+    return defaultFiles;
+  }
+
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
   function unwrapExports (x) {
@@ -43348,52 +43451,15 @@
   exports.parse = parse;
   });
 
-  unwrapExports(babel$1);
+  var parser$1 = unwrapExports(babel$1);
   var babel_1 = babel$1.parse;
   var babel_2 = babel$1.parser;
 
-  var babylon = createCommonjsModule(function (module, exports) {
-  Object.defineProperty(exports, "__esModule", { value: true });
-
-  tslib_es6.__exportStar(babel$1, exports);
-  });
-
-  var parser$1 = unwrapExports(babylon);
-
-  function getIndexFile(_ref) {
-    var content = _ref.content,
-        imports = _ref.imports;
-    return "import React from 'react';\nimport ReactDOM from 'react-dom';\n".concat(imports, "\n\nconst App = () => (\n    <React.Fragment>\n        ").concat(content, "\n    </React.Fragment>\n)\n\nReactDOM.render(\n  <App />,\n  document.getElementById('root')\n);");
-  }
-
-  function getReactFiles(_ref2) {
-    var content = _ref2.content,
-        imports = _ref2.imports,
-        dependencies = _ref2.dependencies;
-    var defaultDependencies = {
-      react: 'latest',
-      'react-dom': 'latest'
-    };
-    var allDependencies = dependencies.reduce(function (agg, dep) {
-      return _objectSpread2(_objectSpread2({}, agg), {}, _defineProperty({}, dep, 'latest'));
-    }, _objectSpread2({}, defaultDependencies));
-    return {
-      'package.json': {
-        content: {
-          dependencies: allDependencies
-        }
-      },
-      'index.js': {
-        content: getIndexFile({
-          content: content,
-          imports: imports
-        })
-      },
-      'index.html': {
-        content: '<div id="root"></div>'
-      }
-    };
-  }
+  /**
+   * Generates the code that will be added in the respective framework.
+   * @param {string} code Selected text
+   * @returns {Object} Content for the respective framework and whether it has export statement.
+   */
 
   var getCodeContent = function getCodeContent(code) {
     var ast = main_5$1(code, {
@@ -43402,8 +43468,20 @@
     ast.program.body = ast.program.body.filter(function (item) {
       return item.type !== 'ImportDeclaration';
     });
-    return main_2$1(ast).code;
+    var hasExportStatement = ast.program.body.find(function (item) {
+      return item.type === 'ExportDefaultDeclaration';
+    });
+    return {
+      content: main_2$1(ast).code,
+      hasExportStatement: hasExportStatement
+    };
   };
+  /**
+   * Returns dependencies and imports info
+   * @param {string} code Selected text
+   * @returns {Object} All imports statement and dependencies.
+   */
+
 
   var getImportContent = function getImportContent(code) {
     var ast = main_5$1(code, {
@@ -43414,21 +43492,54 @@
     });
     var dependencies = ast.program.body.map(function (item) {
       return item.source.value;
+    }).filter(function (dep) {
+      return !dep.includes('.css');
     });
     return {
       imports: main_2$1(ast).code,
       dependencies: dependencies
     };
   };
+  /**
+   * Returns all the parsed info from the code like dependencies, import, content and export statement.
+   * @param {string} code Selected Text
+   * @returns {Object} Import statements, code for respective framework, dependencies and whether has export statement.
+   */
 
-  var getTemplateFiles = function getTemplateFiles(_ref) {
-    var template = _ref.template,
-        code = _ref.code;
-    var content = getCodeContent(code);
+
+  var getParsedCode = function getParsedCode(code) {
+    var _getCodeContent = getCodeContent(code),
+        content = _getCodeContent.content,
+        hasExportStatement = _getCodeContent.hasExportStatement;
 
     var _getImportContent = getImportContent(code),
         imports = _getImportContent.imports,
         dependencies = _getImportContent.dependencies;
+
+    return {
+      imports: imports,
+      dependencies: dependencies,
+      content: content,
+      hasExportStatement: hasExportStatement
+    };
+  };
+
+  /**
+   * Generates CodeSandbox files required in POST API based on the template.
+   * @param {string} template Specifies the framework or library id.
+   * @param {string} code Selected text
+   * @returns {Object} Generated files.
+   */
+
+  var getTemplateFiles = function getTemplateFiles(_ref) {
+    var template = _ref.template,
+        code = _ref.code;
+
+    var _getParsedCode = getParsedCode(code),
+        imports = _getParsedCode.imports,
+        dependencies = _getParsedCode.dependencies,
+        content = _getParsedCode.content,
+        hasExportStatement = _getParsedCode.hasExportStatement;
 
     switch (template) {
       case 'react':
@@ -43436,7 +43547,8 @@
           return getReactFiles({
             content: content,
             imports: imports,
-            dependencies: dependencies
+            dependencies: dependencies,
+            hasExportStatement: hasExportStatement
           });
         }
 
@@ -43446,6 +43558,14 @@
         }
     }
   };
+  /**
+   * Use it to get Sandbox-id and open it in new tab.
+   * @param {Object} params
+   * @param {string} employee.name - The name of the employee.
+   * @param {string} employee.department - The employee's department.
+   * @returns {Promise} Promise object of CSB POST API.
+   */
+
 
   var getSandboxURL = function getSandboxURL(params) {
     return fetch('https://codesandbox.io/api/v1/sandboxes/define?json=1', {
@@ -43463,10 +43583,8 @@
   var TEMPLATES = [{
     title: 'React',
     id: 'react'
-  }, {
-    title: 'Vanilla',
-    id: 'vanilla'
-  }];
+  } // { title: 'Vanilla', id: 'vanilla' },
+  ];
   chrome.runtime.onInstalled.addListener(function runtimeListener() {
     chrome.contextMenus.create({
       title: 'Open in CodeSandbox',
@@ -43484,14 +43602,20 @@
     switch (clickData.menuItemId) {
       case 'react':
         {
-          getSandboxURL({
-            template: clickData.menuItemId,
-            code: clickData.selectionText
-          }).then(function (res) {
-            return res.json();
-          }).then(function (data) {
-            chrome.tabs.create({
-              url: "https://codesandbox.io/s/".concat(data.sandbox_id)
+          chrome.tabs.executeScript({
+            code: 'window.getSelection().toString();'
+          }, function executeHandler(selection) {
+            getSandboxURL({
+              template: clickData.menuItemId,
+              code: selection[0]
+            }).then(function (res) {
+              return res.json();
+            }).then(function (data) {
+              chrome.tabs.create({
+                url: "https://codesandbox.io/s/".concat(data.sandbox_id)
+              });
+            })["catch"](function (e) {
+              console.error(e.message || 'Something went wrong.');
             });
           });
           break;
@@ -43499,7 +43623,7 @@
 
       default:
         {
-          console.log('Unknown template');
+          console.error('Unknown template');
         }
     }
   });
