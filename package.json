@@ -1,5 +1,5 @@
 {
-	"name": "snippet-extension",
+	"name": "snippet-to-sandbox",
 	"version": "0.0.1",
 	"description": "Create sandbox from snippets",
 	"browser": "extension/context.js",
