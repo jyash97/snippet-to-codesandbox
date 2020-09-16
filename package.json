@@ -5,29 +5,35 @@
 	"browser": "extension/context.js",
 	"scripts": {
 		"build": "rollup -c",
-		"start": "rollup -c -w"
+		"start": "rollup -c -w",
+		"format": "prettier --write --use-tabs 'src/**/**/*.js",
+		"test": "jest --watch --config ./jest.config.js"
 	},
 	"author": "jyash97",
 	"license": "MIT",
 	"devDependencies": {
 		"@babel/core": "^7.11.6",
 		"@babel/preset-env": "^7.11.5",
+		"@types/jest": "^26.0.14",
 		"babel-eslint": "^10.1.0",
 		"eslint": "^7.9.0",
 		"eslint-config-airbnb-base": "^14.0.0",
 		"eslint-config-prettier": "^6.11.0",
 		"eslint-plugin-import": "^2.18.2",
 		"eslint-plugin-prettier": "^3.1.4",
+		"jest": "^26.4.2",
 		"prettier": "^2.1.1",
 		"rollup": "^2.26.11",
 		"rollup-plugin-babel": "^4.4.0",
 		"rollup-plugin-commonjs": "^10.1.0",
 		"rollup-plugin-node-builtins": "^2.1.2",
 		"rollup-plugin-node-resolve": "^5.2.0",
-		"rollup-plugin-peer-deps-external": "^2.2.3"
+		"rollup-plugin-peer-deps-external": "^2.2.3",
+		"rollup-plugin-terser": "^7.0.2"
 	},
 	"dependencies": {
 		"babylon": "^6.18.0",
+		"lodash.get": "^4.4.2",
 		"recast": "^0.20.3"
 	}
 }
