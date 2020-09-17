@@ -14,12 +14,12 @@ Extension underneath uses parser to convert the selected text into ASTs and afte
 
 ### Framework and Library Supports ✨
 
-[x] React
-[ ] Vanilla - Needs Tests and a proper testing.
-[ ] Svelte
-[ ] Vue
-[ ] Angular
-[ ] Node and its frameworks
+- [x] React
+- [ ] Vanilla - Needs Tests and a proper testing.
+- [ ] Svelte
+- [ ] Vue
+- [ ] Angular
+- [ ] Node and its frameworks
 
 ### Contributing 💻
 
