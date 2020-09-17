@@ -1,5 +1,5 @@
 import { getSandboxURL } from './utils';
-const COOL_VAR = '';
+
 const TEMPLATES = [
 	{ title: 'React', id: 'react' },
 	// { title: 'Vanilla', id: 'vanilla' },
