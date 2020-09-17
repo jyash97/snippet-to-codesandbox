@@ -1,5 +1,4 @@
 import { getReactFiles } from '../templates/react';
-import { getParsedCode } from './parser';
 
 /**
  * Generates CodeSandbox files required in POST API based on the template.
@@ -8,10 +7,9 @@ import { getParsedCode } from './parser';
  * @returns {Object} Generated files.
  */
 const getTemplateFiles = ({ template, code }) => {
-	const { imports, dependencies, content, hasExportStatement } = getParsedCode(code);
 	switch (template) {
 		case 'react': {
-			return getReactFiles({ content, imports, dependencies, hasExportStatement });
+			return getReactFiles(code);
 		}
 		default: {
 			return {};

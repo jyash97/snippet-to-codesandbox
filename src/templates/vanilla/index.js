@@ -1,8 +1,8 @@
 import { HTML_FILE } from './constant';
-import { ReactParser } from './parser';
+import { VanillaParser } from './parser';
 
 export const getReactFiles = (code) => {
-	const instance = new ReactParser(code);
+	const instance = new VanillaParser(code);
 
 	return {
 		'package.json': {
