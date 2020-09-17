@@ -1,4 +1,4 @@
-name: Run Test Cases
+name: Run Linting & Test Cases
 on: push
 jobs:
     build:
