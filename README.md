@@ -12,7 +12,7 @@ These process doesnt take alot of time but it becomes frustrating when testing a
 
 Extension underneath uses parser to convert the selected text into ASTs and after applying and considering different use-cases based on the library, code is generated.
 
-### Framework and Library Supports
+### Framework and Library Supports ✨
 
 [x] React
 [ ] Vanilla - Needs Tests and a proper testing.
@@ -20,6 +20,10 @@ Extension underneath uses parser to convert the selected text into ASTs and afte
 [ ] Vue
 [ ] Angular
 [ ] Node and its frameworks
+
+### Contributing 💻
+
+Contribution are highly appreaciated. Do read [Contributing Guide](/CONTRIBUTING.md) before starting.
 
 ### Thanks
 
