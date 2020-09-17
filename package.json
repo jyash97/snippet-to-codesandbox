@@ -6,11 +6,20 @@
 	"scripts": {
 		"build": "rollup -c",
 		"start": "rollup -c -w",
-		"format": "prettier --write --use-tabs 'src/**/**/*.js",
-		"test": "jest --watch --config ./jest.config.js"
+		"format": "prettier --write --use-tabs 'src/**/**/*.js'",
+		"lint": "eslint --fix 'src/**/**/*.js'",
+		"test": "jest --config ./jest.config.js",
+		"test:watch": "jest --watch --config ./jest.config.js"
 	},
 	"author": "jyash97",
 	"license": "MIT",
+	"lint-staged": {
+		"*.js": [
+			"jest",
+			"prettier --write --use-tabs",
+			"eslint --fix"
+		]
+	},
 	"devDependencies": {
 		"@babel/core": "^7.11.6",
 		"@babel/preset-env": "^7.11.5",
@@ -22,6 +31,7 @@
 		"eslint-plugin-import": "^2.18.2",
 		"eslint-plugin-prettier": "^3.1.4",
 		"jest": "^26.4.2",
+		"lint-staged": "^10.4.0",
 		"prettier": "^2.1.1",
 		"rollup": "^2.26.11",
 		"rollup-plugin-babel": "^4.4.0",

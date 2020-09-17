@@ -5,7 +5,7 @@ ${code}
 	`;
 };
 
-const BUILD_FOLDERS = ['/lib', '/dist', '/build', '/assets'];
+const BUILD_FOLDERS = ['/lib', '/dist', '/build', '/assets', '/locale'];
 
 export const getAllImports = ({ codeImports, codeDeps, importsMap }) => {
 	return Object.keys(importsMap).reduce((agg, dep) => {
@@ -13,10 +13,7 @@ export const getAllImports = ({ codeImports, codeDeps, importsMap }) => {
 			return agg;
 		}
 
-		return getFormattedCode(`
-			${importsMap[dep]}
-			${agg}
-		`);
+		return getFormattedCode(`${importsMap[dep]}${agg}`);
 	}, codeImports);
 };
 

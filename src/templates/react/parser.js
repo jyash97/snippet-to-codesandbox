@@ -84,10 +84,6 @@ class ReactParser {
 	}
 
 	get hasDOMRendering() {
-		if (this.dependencies.includes('react-dom')) {
-			return true;
-		}
-
 		const propertyAccessExpr = this.astBody.find(
 			(node) =>
 				node.type === EXPR &&
