@@ -7,5 +7,7 @@ jobs:
             - uses: actions/checkout@v2
             - name: Install Dependencies
               run: yarn
+            - name: Check code Linting
+              run: yarn lint
             - name: Run tests
               run: yarn test
