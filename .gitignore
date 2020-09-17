@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# extensions JS files
+/extension/context.js
+/extension/context.js.map
