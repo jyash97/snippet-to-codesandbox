@@ -14,17 +14,17 @@ Extension underneath uses parser to convert the selected text into ASTs and afte
 
 ### Framework and Library Supports ✨
 
-- [x] React
-- [ ] Vanilla - Needs Tests and a proper testing.
-- [ ] Svelte
-- [ ] Vue
-- [ ] Angular
-- [ ] Node and its frameworks
+-   [x] React
+-   [ ] Vanilla - Needs Tests and a proper testing.
+-   [ ] Svelte
+-   [ ] Vue
+-   [ ] Angular
+-   [ ] Node and its frameworks
 
 ### Contributing 💻
 
-Contribution are highly appreaciated. Do read [Contributing Guide](/CONTRIBUTING.md) before starting.
+Contribution are highly appreciated. Do read [Contributing Guide](/CONTRIBUTING.md) before starting.
 
 ### Thanks
 
-A big thanks to [CodeSandbox](https://codesandbox.io) for providing the API to create sandbox and giving life to the extension.
+A big thanks to [CodeSandbox](https://codesandbox.io) for providing the API to create sandbox and giving life to these extension.
