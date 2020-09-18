@@ -1,4 +1,4 @@
-import { HTML_FILE } from './constant';
+import { HTML_FILE } from './helper';
 import { ReactParser } from './parser';
 
 export const getReactFiles = (code) => {

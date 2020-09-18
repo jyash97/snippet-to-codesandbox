@@ -1,10 +1,23 @@
 import { parse } from 'recast';
 import get from 'lodash.get';
 
-import { COMPONENT_CODE, REACTDOM_IMPORT, REACT_IMPORT, RENDER_TO_DOM } from './constant';
-import { ARROW_FUN, BLOCK, EXPORT, EXPR, JSX_ELEM, VARIABLE, RETURN } from '../../tokens';
+import { generateBasicCode, REACTDOM_IMPORT, REACT_IMPORT } from './helper';
+import {
+	ARROW_FUN,
+	BLOCK,
+	EXPORT,
+	EXPR,
+	JSX_ELEM,
+	VARIABLE,
+	RETURN,
+	JSX_FRAG,
+	FUNCTION,
+	CLASS,
+	IDENTIFIER,
+	MEMBER_EXPR,
+} from '../../tokens';
 import { getCodeInfo } from '../../utils/parser';
-import { getAllImports, getFormattedCode, getSandboxDependencies } from '../../utils/code';
+import { getAllImports, getSandboxDependencies } from '../../utils/code';
 
 class ReactParser {
 	constructor(code) {
@@ -28,48 +41,94 @@ class ReactParser {
 	}
 
 	get code() {
-		if (this.hasDOMRendering) {
-			return getFormattedCode(`
-				${this.importStatements}
+		const basicCodeInfo = {
+			imports: this.importStatements,
+			code: this.codeWithoutImports,
+			hasRender: false,
+		};
 
-				${this.codeWithoutImports}
-			`);
+		if (this.hasDOMRendering) {
+			return generateBasicCode({
+				...basicCodeInfo,
+				hasRender: true,
+			});
 		}
 
 		if (this.hasDefaultJSXExport) {
-			return getFormattedCode(`
-				${this.importStatements}
+			return generateBasicCode({
+				...basicCodeInfo,
+				code: this.codeWithoutImports.replace('export default', 'const App ='),
+			});
+		}
 
-				${this.codeWithoutImports.replace('export default', 'const App =')}
+		if (this.hasClassComponent) {
+			return generateBasicCode({
+				...basicCodeInfo,
+				componentToRender: this.classComponentName,
+			});
+		}
 
-				${RENDER_TO_DOM()}
-			`);
+		if (this.hasFunctionalComponent) {
+			return generateBasicCode({
+				...basicCodeInfo,
+				componentToRender: this.functionalComponentName,
+			});
 		}
 
 		if (this.hasComponentDefined) {
-			return getFormattedCode(`
-				${this.importStatements}
-
-				${this.codeWithoutImports}
-
-				${RENDER_TO_DOM({ component: this.jsxComponentName })}
-			`);
+			return generateBasicCode({
+				...basicCodeInfo,
+				componentToRender: this.jsxComponentName,
+			});
 		}
 
 		if (this.hasJSXExpression) {
-			return getFormattedCode(`
-				${this.importStatements}
-
-				${COMPONENT_CODE({ code: this.codeWithoutImports })}
-
-				${RENDER_TO_DOM()}
-			`);
+			return generateBasicCode({ ...basicCodeInfo, isJSXExpression: true });
 		}
+
 		return '';
+	}
+
+	get classComponent() {
+		return this.astBody.find(
+			(node) =>
+				(node.type === CLASS &&
+					get(node, 'superClass.type', '') === IDENTIFIER &&
+					get(node, 'superClass.name', '') === 'Component') ||
+				(get(node, 'superClass.type', '') === MEMBER_EXPR &&
+					get(node, 'superClass.property.name', '') === 'Component'),
+		);
+	}
+
+	get classComponentName() {
+		return get(this.classComponent, 'id.name', null);
+	}
+
+	get functionalComponent() {
+		const functionalComponentNode = this.astBody.find(
+			(node) =>
+				node.type === FUNCTION &&
+				get(node, 'body.type', '') === BLOCK &&
+				get(
+					get(node, 'body.body', []).find((insideNode) => insideNode.type === RETURN),
+					'argument.type',
+					'',
+				) === JSX_ELEM,
+		);
+
+		return functionalComponentNode;
+	}
+
+	get functionalComponentName() {
+		return get(this.functionalComponent, 'id.name', null);
 	}
 
 	get hasComponentDefined() {
 		return !!this.jsxComponent;
+	}
+
+	get hasClassComponent() {
+		return !!this.classComponent;
 	}
 
 	get hasDefaultJSXExport() {
@@ -105,9 +164,16 @@ class ReactParser {
 		return !!directAccessExpr;
 	}
 
+	get hasFunctionalComponent() {
+		return !!this.functionalComponent;
+	}
+
 	get hasJSXExpression() {
 		const jsxExpressionNode = this.astBody.find(
-			(node) => node.type === EXPR && get(node, 'expression.type') === JSX_ELEM,
+			(node) =>
+				node.type === EXPR &&
+				(get(node, 'expression.type') === JSX_ELEM ||
+					get(node, 'expression.type') === JSX_FRAG),
 		);
 
 		return !!jsxExpressionNode;
@@ -129,7 +195,8 @@ class ReactParser {
 			(node) =>
 				node.type === VARIABLE &&
 				get(node, 'declarations[0].init.type', '') === ARROW_FUN &&
-				get(node, 'declarations[0].init.body.type', '') === JSX_ELEM,
+				(get(node, 'declarations[0].init.body.type', '') === JSX_ELEM ||
+					get(node, 'declarations[0].init.body.type', '') === JSX_FRAG),
 		);
 		if (implicitReturnJSXNode) {
 			return implicitReturnJSXNode;

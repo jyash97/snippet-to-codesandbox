@@ -1,3 +1,5 @@
+import { getFormattedCode } from '../../utils/code';
+
 export const REACT_IMPORT = `import React from 'react';`;
 export const REACTDOM_IMPORT = `import ReactDOM from 'react-dom';`;
 
@@ -12,6 +14,22 @@ const App = () => (
 	</React.Fragment>
 )
 `;
+
+export const generateBasicCode = ({
+	imports,
+	code,
+	componentToRender = 'App',
+	hasRender = false,
+	isJSXExpression = false,
+}) => {
+	return getFormattedCode(`
+		${imports}
+
+		${isJSXExpression ? COMPONENT_CODE({ code }) : code}
+
+		${hasRender ? '' : RENDER_TO_DOM({ component: componentToRender })}
+	`);
+};
 
 // #region HTML File used in React Template
 export const HTML_FILE = `

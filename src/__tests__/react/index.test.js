@@ -135,6 +135,41 @@ const outputForDirectRender = `
 	render(<Dep />, document.getElementById("app"))
 `;
 
+const outputForFunctionalComponent = `
+	import ReactDOM from 'react-dom';
+	import React from 'react';
+	import Dep from 'dep';
+
+	function FunctionalApp() {
+		return (
+			<React.Fragment>
+				<Dep />
+			</React.Fragment>
+		);
+	}
+
+	ReactDOM.render(<FunctionalApp />, document.getElementById("root"));
+`;
+
+const outputForClassComponent = `
+	import ReactDOM from 'react-dom';
+	import React from 'react';
+	import Dep from 'dep';
+
+	class ClassApp extends React.Component {
+		render () {
+			return (
+				<div>
+					<h2>Hello World</h2>
+					<Dep />
+				</div>
+			);
+		}
+	}
+
+	ReactDOM.render(<ClassApp />, document.getElementById("root"));
+`;
+
 // TODO: Create the instance once and use it in different test cases
 describe('JSX Expression with Dependency', () => {
 	test('with only Dependency import', () => {
@@ -204,7 +239,7 @@ describe('No Dependencies', () => {
 	});
 });
 
-describe('Functional (Arrow-fun) Component Defined', () => {
+describe('Functional Component Defined', () => {
 	test('with Implicit Return', () => {
 		const code = `
 			const Counter = () =>  (
@@ -237,6 +272,47 @@ describe('Functional (Arrow-fun) Component Defined', () => {
 		return expect(codeFormatter(outputForExplicitComponent)).toEqual(
 			codeFormatter(instance.code),
 		);
+	});
+
+	test('with Functional declaration', () => {
+		const code = `
+			import Dep from 'dep'
+
+			function FunctionalApp() {
+				return (
+					<React.Fragment>
+						<Dep />
+					</React.Fragment>
+				)
+			}
+		`;
+
+		const instance = new ReactParser(code);
+
+		return expect(codeFormatter(outputForFunctionalComponent)).toEqual(
+			codeFormatter(instance.code),
+		);
+	});
+
+	test('with Class Component', () => {
+		const code = `
+			import Dep from 'dep';
+
+			class ClassApp extends React.Component {
+				render () {
+					return (
+						<div>
+							<h2>Hello World</h2>
+							<Dep />
+						</div>
+					);
+				}
+			}
+		`;
+
+		const instance = new ReactParser(code);
+
+		return expect(codeFormatter(outputForClassComponent)).toEqual(codeFormatter(instance.code));
 	});
 });
 
