@@ -2,9 +2,7 @@
 
 Generate Codesandbox from text snippets.
 
-<!-- TODO: Add images here -->
-
-_Images to be added here_
+<img src="images/main.png" alt="Banner for Extension" />
 
 ## Install
 
@@ -14,9 +12,7 @@ Chrome extension link
 
 ## How it works
 
-<!-- TODO: Add GIF here -->
-
-_Add Gif_
+<img src="images/working.png" alt="How extension works"  />
 
 ## Motivation
 

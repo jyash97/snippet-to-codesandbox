@@ -1,11 +1,12 @@
 {
-	"name": "Open in Codesandbox",
+	"name": "Snippet to CodeSandbox",
 	"description": "Generate CodeSandbox from snippets",
 	"version": "0.0.1",
-	"permissions": ["contextMenus", "tabs", "<all_urls>"],
+	"permissions": ["contextMenus", "tabs", "activeTab"],
 	"background": {
 		"persistent": false,
 		"scripts": ["context.js"]
 	},
+	"icons": { "128": "/logo.png" },
 	"manifest_version": 2
 }
