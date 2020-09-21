@@ -22,11 +22,20 @@ import { getAllImports, getSandboxDependencies } from '../../utils/code';
 class ReactParser {
 	constructor(code) {
 		this.orignalCode = code;
-		this.codeAST = parse(code);
-		const { imports, dependencies, codeWithoutImports } = getCodeInfo({ ast: this.codeAST });
-		this.imports = imports;
-		this.dependencies = dependencies;
-		this.codeWithoutImports = codeWithoutImports;
+		try {
+			this.codeAST = parse(code);
+			const { imports, dependencies, codeWithoutImports } = getCodeInfo({
+				ast: this.codeAST,
+			});
+			this.imports = imports;
+			this.dependencies = dependencies;
+			this.codeWithoutImports = codeWithoutImports;
+		} catch (e) {
+			this.codeAST = {};
+			this.imports = '';
+			this.dependencies = [];
+			this.codeWithoutImports = '';
+		}
 	}
 
 	get allDependenciesWithVersion() {
@@ -86,7 +95,8 @@ class ReactParser {
 			return generateBasicCode({ ...basicCodeInfo, isJSXExpression: true });
 		}
 
-		return '';
+		// paste the selected text in the file
+		return this.orignalCode;
 	}
 
 	get classComponent() {

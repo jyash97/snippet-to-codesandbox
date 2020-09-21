@@ -379,3 +379,12 @@ describe('Full App (with DOM Rendering)', () => {
 		return expect(codeFormatter(outputForDirectRender)).toEqual(codeFormatter(instance.code));
 	});
 });
+
+describe('Error handling', () => {
+	test('Multiple JSX Elements', () => {
+		const code = `<div></div><div></div>`;
+		const instance = new ReactParser(code);
+
+		return expect(code).toEqual(instance.code);
+	});
+});

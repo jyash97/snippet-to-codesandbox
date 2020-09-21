@@ -4,7 +4,6 @@ import { IMPORT, VARIABLE } from '../tokens';
 
 const getCodeFromAST = ({ ast, astBody }) => {
 	const duplicateAst = JSON.parse(JSON.stringify(ast));
-
 	return print({
 		...duplicateAst,
 		program: {
@@ -15,7 +14,7 @@ const getCodeFromAST = ({ ast, astBody }) => {
 };
 
 export const getCodeInfo = ({ ast }) => {
-	const astBody = get(ast, 'program.body');
+	const astBody = get(ast, 'program.body', []);
 	const importStatementNodes = astBody.filter(
 		(node) => node.type === IMPORT && get(node, 'source.value', ''),
 	);
