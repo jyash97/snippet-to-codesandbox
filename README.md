@@ -6,9 +6,7 @@ Generate Codesandbox from text snippets.
 
 ## Install
 
-<!-- TODO: Add Link here -->
-
-Chrome extension link
+[Chrome extension](https://chrome.google.com/webstore/detail/snippet-to-codesandbox/bkmhfdpkdgbiaoeggdpbckgimgolpohc?hl=en)
 
 ## How it works
 
