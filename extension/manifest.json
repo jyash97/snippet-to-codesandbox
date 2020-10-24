@@ -1,7 +1,7 @@
 {
 	"name": "Snippet to CodeSandbox",
 	"description": "Generate CodeSandbox from snippets",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"permissions": ["contextMenus", "tabs", "activeTab"],
 	"background": {
 		"persistent": false,
