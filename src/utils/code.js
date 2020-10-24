@@ -20,7 +20,8 @@ export const getAllImports = ({ codeImports, codeDeps, importsMap }) => {
 export const getSandboxDependencies = ({ deps, required = [] }) => {
 	const allDeps = [...required, ...deps]
 		.filter((dep) => !dep.includes('.css'))
-		.filter((dep) => !BUILD_FOLDERS.find((folder) => dep.includes(folder)));
+		.filter((dep) => !BUILD_FOLDERS.find((folder) => dep.includes(folder)))
+		.filter((dep) => !dep.includes('./'));
 
 	return allDeps.reduce(
 		(agg, dep) => ({

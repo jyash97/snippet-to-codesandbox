@@ -170,221 +170,262 @@ const outputForClassComponent = `
 	ReactDOM.render(<ClassApp />, document.getElementById("root"));
 `;
 
+const outputForLocalImports = `
+	import ReactDOM from 'react-dom';
+	import React from 'react';
+	import Component from './component';
+
+	const App = () => (
+		<React.Fragment>
+			<Component />
+		</React.Fragment>
+	);
+
+	ReactDOM.render(<App />, document.getElementById("root"));
+`;
+
 // TODO: Create the instance once and use it in different test cases
-describe('JSX Expression with Dependency', () => {
-	test('with only Dependency import', () => {
-		const code = `
-			import Dep from 'dep';
 
-			<Dep />
-		`;
+describe('React Parser', () => {
+	describe('JSX Expression with Dependency', () => {
+		test('with only Dependency import', () => {
+			const code = `
+				import Dep from 'dep';
 
-		const instance = new ReactParser(code);
-		return expect(codeFormatter(outputForDep)).toEqual(codeFormatter(instance.code));
-	});
+				<Dep />
+			`;
 
-	test('with React import', () => {
-		const code = `
-			import React from 'react';
-			import Dep from 'dep';
+			const instance = new ReactParser(code);
+			return expect(codeFormatter(outputForDep)).toEqual(codeFormatter(instance.code));
+		});
 
-			<Dep />
-		`;
+		test('with React import', () => {
+			const code = `
+				import React from 'react';
+				import Dep from 'dep';
 
-		const instance = new ReactParser(code);
-		return expect(codeFormatter(outputForDep)).toEqual(codeFormatter(instance.code));
-	});
+				<Dep />
+			`;
 
-	test('with React and ReactDOM imports', () => {
-		const code = `
-			import ReactDOM from 'react-dom';
-			import React from 'react';
-			import Dep from 'dep';
+			const instance = new ReactParser(code);
+			return expect(codeFormatter(outputForDep)).toEqual(codeFormatter(instance.code));
+		});
 
-			<Dep />
-		`;
+		test('with React and ReactDOM imports', () => {
+			const code = `
+				import ReactDOM from 'react-dom';
+				import React from 'react';
+				import Dep from 'dep';
 
-		const instance = new ReactParser(code);
+				<Dep />
+			`;
 
-		return expect(codeFormatter(outputForDep)).toEqual(codeFormatter(instance.code));
-	});
+			const instance = new ReactParser(code);
 
-	test('Import build files, locales and styles', () => {
-		const code = `
-			import Dep from 'dep';
-			import config from 'dep/lib/config'
-			import enus from 'dep/lib/locale/en_US'
-			import 'dep/assets/index.css';
+			return expect(codeFormatter(outputForDep)).toEqual(codeFormatter(instance.code));
+		});
 
-			<Dep />
-		`;
+		test('Import build files, locales and styles', () => {
+			const code = `
+				import Dep from 'dep';
+				import config from 'dep/lib/config'
+				import enus from 'dep/lib/locale/en_US'
+				import 'dep/assets/index.css';
 
-		const instance = new ReactParser(code);
+				<Dep />
+			`;
 
-		return expect(codeFormatter(outputForImportedAssets)).toEqual(codeFormatter(instance.code));
-	});
-});
+			const instance = new ReactParser(code);
 
-describe('No Dependencies', () => {
-	test('JSX Expression', () => {
-		const code = `
-			<div>
-				<h1>Hello World!</h1>
-			</div>
-		`;
-
-		const instance = new ReactParser(code);
-
-		return expect(codeFormatter(outputForNoDep)).toEqual(codeFormatter(instance.code));
-	});
-});
-
-describe('Functional Component Defined', () => {
-	test('with Implicit Return', () => {
-		const code = `
-			const Counter = () =>  (
-				<React.Fragment>
-					<h2>Hello Test</h2>
-				</React.Fragment>
+			return expect(codeFormatter(outputForImportedAssets)).toEqual(
+				codeFormatter(instance.code),
 			);
-		`;
-
-		const instance = new ReactParser(code);
-
-		return expect(codeFormatter(outputForImplicitComponent)).toEqual(
-			codeFormatter(instance.code),
-		);
+		});
 	});
 
-	test('with Explicit Return', () => {
-		const code = `
-			const ExplicitCounter = () =>  {
-				return (
+	describe('No Dependencies', () => {
+		test('JSX Expression', () => {
+			const code = `
+				<div>
+					<h1>Hello World!</h1>
+				</div>
+			`;
+
+			const instance = new ReactParser(code);
+
+			return expect(codeFormatter(outputForNoDep)).toEqual(codeFormatter(instance.code));
+		});
+	});
+
+	describe('Functional Component Defined', () => {
+		test('with Implicit Return', () => {
+			const code = `
+				const Counter = () =>  (
 					<React.Fragment>
 						<h2>Hello Test</h2>
 					</React.Fragment>
 				);
-			};
-		`;
+			`;
 
-		const instance = new ReactParser(code);
+			const instance = new ReactParser(code);
 
-		return expect(codeFormatter(outputForExplicitComponent)).toEqual(
-			codeFormatter(instance.code),
-		);
-	});
+			return expect(codeFormatter(outputForImplicitComponent)).toEqual(
+				codeFormatter(instance.code),
+			);
+		});
 
-	test('with Functional declaration', () => {
-		const code = `
-			import Dep from 'dep'
-
-			function FunctionalApp() {
-				return (
-					<React.Fragment>
-						<Dep />
-					</React.Fragment>
-				)
-			}
-		`;
-
-		const instance = new ReactParser(code);
-
-		return expect(codeFormatter(outputForFunctionalComponent)).toEqual(
-			codeFormatter(instance.code),
-		);
-	});
-
-	test('with Class Component', () => {
-		const code = `
-			import Dep from 'dep';
-
-			class ClassApp extends React.Component {
-				render () {
+		test('with Explicit Return', () => {
+			const code = `
+				const ExplicitCounter = () =>  {
 					return (
-						<div>
-							<h2>Hello World</h2>
-							<Dep />
-						</div>
+						<React.Fragment>
+							<h2>Hello Test</h2>
+						</React.Fragment>
 					);
+				};
+			`;
+
+			const instance = new ReactParser(code);
+
+			return expect(codeFormatter(outputForExplicitComponent)).toEqual(
+				codeFormatter(instance.code),
+			);
+		});
+
+		test('with Functional declaration', () => {
+			const code = `
+				import Dep from 'dep'
+
+				function FunctionalApp() {
+					return (
+						<React.Fragment>
+							<Dep />
+						</React.Fragment>
+					)
 				}
-			}
-		`;
+			`;
 
-		const instance = new ReactParser(code);
+			const instance = new ReactParser(code);
 
-		return expect(codeFormatter(outputForClassComponent)).toEqual(codeFormatter(instance.code));
+			return expect(codeFormatter(outputForFunctionalComponent)).toEqual(
+				codeFormatter(instance.code),
+			);
+		});
+
+		test('with Class Component', () => {
+			const code = `
+				import Dep from 'dep';
+
+				class ClassApp extends React.Component {
+					render () {
+						return (
+							<div>
+								<h2>Hello World</h2>
+								<Dep />
+							</div>
+						);
+					}
+				}
+			`;
+
+			const instance = new ReactParser(code);
+
+			return expect(codeFormatter(outputForClassComponent)).toEqual(
+				codeFormatter(instance.code),
+			);
+		});
 	});
-});
 
-describe('Mixed Imports', () => {
-	test('with all CommonJS Import', () => {
-		const code = `
-			const React = require("react");
-			const ReactDOM = require("react-dom");
-			const Dep = require('dep');
+	describe('Mixed Imports', () => {
+		test('with all CommonJS Import', () => {
+			const code = `
+				const React = require("react");
+				const ReactDOM = require("react-dom");
+				const Dep = require('dep');
 
-			<Dep />
-		`;
+				<Dep />
+			`;
 
-		const instance = new ReactParser(code);
+			const instance = new ReactParser(code);
 
-		return expect(codeFormatter(outputForCommonJS)).toEqual(codeFormatter(instance.code));
+			return expect(codeFormatter(outputForCommonJS)).toEqual(codeFormatter(instance.code));
+		});
+
+		test('with different Imports', () => {
+			const code = `
+				const ReactDOM = require("react-dom");
+				const Dep = require('dep');
+
+				<Dep />
+			`;
+
+			const instance = new ReactParser(code);
+
+			return expect(codeFormatter(outputForMixedImport)).toEqual(
+				codeFormatter(instance.code),
+			);
+		});
 	});
 
-	test('with different Imports', () => {
-		const code = `
-			const ReactDOM = require("react-dom");
-			const Dep = require('dep');
+	describe('Exported Component', () => {
+		test('Basic', () => {
+			const code = `
+				import Dep from 'dep';
 
-			<Dep />
-		`;
+				export default () => (
+					<Dep.Provider>
+						<Dep.UI />
+					</Dep.Provider>
+				)
+			`;
 
-		const instance = new ReactParser(code);
+			const instance = new ReactParser(code);
 
-		return expect(codeFormatter(outputForMixedImport)).toEqual(codeFormatter(instance.code));
+			return expect(codeFormatter(outputForExportedComponent)).toEqual(
+				codeFormatter(instance.code),
+			);
+		});
 	});
-});
 
-describe('Exported Component', () => {
-	test('Basic', () => {
-		const code = `
-			import Dep from 'dep';
+	describe('Full App (with DOM Rendering)', () => {
+		test('Named render import', () => {
+			const code = `
+				import { render } from 'react-dom'
+				import React from 'react'
+				import  Dep from 'dep'
 
-			export default () => (
-				<Dep.Provider>
-					<Dep.UI />
-				</Dep.Provider>
-			)
-		`;
+				render(<Dep />, document.getElementById("app"))
+			`;
+			const instance = new ReactParser(code);
 
-		const instance = new ReactParser(code);
-
-		return expect(codeFormatter(outputForExportedComponent)).toEqual(
-			codeFormatter(instance.code),
-		);
+			return expect(codeFormatter(outputForDirectRender)).toEqual(
+				codeFormatter(instance.code),
+			);
+		});
 	});
-});
 
-describe('Full App (with DOM Rendering)', () => {
-	test('Named render import', () => {
-		const code = `
-			import { render } from 'react-dom'
-			import React from 'react'
-			import  Dep from 'dep'
+	describe('Error handling', () => {
+		test('Multiple JSX Elements', () => {
+			const code = `<div></div><div></div>`;
+			const instance = new ReactParser(code);
 
-			render(<Dep />, document.getElementById("app"))
-		`;
-		const instance = new ReactParser(code);
-
-		return expect(codeFormatter(outputForDirectRender)).toEqual(codeFormatter(instance.code));
+			return expect(code).toEqual(instance.code);
+		});
 	});
-});
 
-describe('Error handling', () => {
-	test('Multiple JSX Elements', () => {
-		const code = `<div></div><div></div>`;
-		const instance = new ReactParser(code);
+	describe('Local Imports', () => {
+		test('Basic', () => {
+			const code = `
+				import Component from './component';
 
-		return expect(code).toEqual(instance.code);
+				<Component />
+			`;
+
+			const instance = new ReactParser(code);
+
+			return expect(codeFormatter(outputForLocalImports)).toEqual(
+				codeFormatter(instance.code),
+			);
+		});
 	});
 });
